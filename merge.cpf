@@ -1,0 +1,6 @@
+[Startup]
+# PasswordHash=93aa4f790cacfb1a54c7063558c04f403192ff91,3kqd238o
+WebServerPort=8080
+
+[Actions]
+CreateApplication:Name=/,MatchRoles=:%ALL,NameSpace=USER,DispatchClass=dc.kubeless.REST,AutheEnabled=64

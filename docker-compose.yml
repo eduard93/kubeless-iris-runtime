@@ -1,0 +1,11 @@
+version: '2.4'
+services:
+  iris:
+    image: eduard93/kubeless-iris-runtime:latest
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 18080:8080
+      - 18081:1972
