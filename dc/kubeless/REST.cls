@@ -88,8 +88,29 @@ ClassMethod work(arg = "") As %Status
     set ^dbg(i, "env", env) = $SYSTEM.Util.GetEnviron(env)
   }
 
-  Write "Hello"
-  Quit $$$OK
+   if $d(body) {
+    set event = {}.%FromJSON(body)
+  } else {
+    set event = {}
+  }
+
+  set context = {}
+
+  set folder = ##class(%File).NormalizeDirectory($SYSTEM.Util.GetEnviron("KUBELESS_INSTALL_VOLUME"))
+  set file = $SYSTEM.Util.GetEnviron("MOD_NAME")
+  set class = $tr(file, "_", ".")
+  
+  if '##class(%Dictionary.CompiledClass).%ExistsId(class) {
+    set sc = $SYSTEM.OBJ.Load(folder _ file _ ".cls", "cuks /checkuptodate=expandedonly /displaylog=0 /displayerror=0")
+    if $$$ISERR(sc) {
+      write {"error": ($System.Status.GetErrorText(sc))}.%ToJSON()
+      quit $$$OK
+    }
+  }
+
+  set method = $SYSTEM.Util.GetEnviron("FUNC_HANDLER")
+
+  Quit $classmethod(class, method, event, context)
 }
 
 }

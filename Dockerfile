@@ -1,4 +1,4 @@
-ARG IMAGE=store/intersystems/iris-community:2021.1.0.215.0
+ARG IMAGE=containers.intersystems.com/intersystems/iris:2022.1.0.131.0
 FROM ${IMAGE}
 
 USER ${ISC_PACKAGE_MGRUSER}
@@ -14,6 +14,10 @@ COPY --chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} merge.cpf $ISC_PACK
 COPY --chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} irissession.sh /
 RUN chmod +x /irissession.sh 
 
+RUN touch /iris-main.log
+RUN chmod +777 /iris-main.log
+RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /iris-main.log
+
 SHELL ["/irissession.sh"]
 
 USER ${ISC_PACKAGE_MGRUSER}
@@ -25,6 +29,10 @@ RUN \
 
 SHELL ["/bin/bash", "-c"]
 
+
 WORKDIR /home/irisowner
+RUN rm -f iris-main.log
+
+ENTRYPOINT pwd && whoami && ls -al && /tini -- /iris-main
 
 HEALTHCHECK --interval=5s CMD /irisHealth.sh || exit 1
